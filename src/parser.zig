@@ -325,6 +325,23 @@ pub fn Integer(comptime Int: type, comptime base: u8) Parser(Int) {
     };
 }
 
+pub fn Line() Parser([]const u8) {
+    return .{
+        .parse = struct {
+            fn parse(allocator: Allocator, input: []const u8) Error!Result([]const u8) {
+                const result = try StringLiteral().parse(allocator, input);
+                if (result.rest[0] != '\n') {
+                    return Error.ParserFailed;
+                }
+                return Result([]const u8) {
+                    .value = result.value,
+                    .rest = result.rest[1..],
+                };
+            }
+        }.parse,
+    };
+}
+
 pub const eof = Parser(void){
     .parse = struct {
         fn parse(_: Allocator, input: []const u8) Error!Parser(void) {
@@ -338,107 +355,3 @@ pub const eof = Parser(void){
         }
     }.parse,
 };
-
-// pub fn Parser(comptime Input: type, comptime Output: type) type {
-//     return struct {
-//         const Self = @This();
-//
-//         _parse: fn (self: *Self, allocator: Allocator, src: *Input) callconv(.Inline) Allocator.Error!?Output,
-//
-//         pub inline fn parse(self: *Self, allocator: Allocator, src: *Input) Allocator.Error!?Output {
-//             return self._parse(self, allocator, src);
-//         }
-//     };
-// }
-//
-// pub fn Char(comptime Input: type) type {
-//     return struct {
-//         const Self = @This();
-//
-//         parser: Parser(Input, u8) = .{
-//             ._parse = parse,
-//         },
-//         match: u8,
-//
-//         pub fn init(match: u8) Self {
-//             return .{
-//                 .match = match,
-//             };
-//         }
-//
-//         fn parse(parser: *Parser(Input, u8), _: Allocator, src: *Input) Allocator.Error!?u8 {
-//             const self = @fieldParentPtr(Self, "parser", parser);
-//             const char = try src.reader().readByte();
-//
-//             if (char != self.match) {
-//                 return null;
-//             }
-//
-//             return char;
-//         }
-//     };
-// }
-//
-// pub fn String(comptime Input: type) type {
-//     return struct {
-//         const Self = @This();
-//
-//         parser: Parser(Input, []const u8) = .{
-//             ._parse = parse,
-//         },
-//         match: []const u8,
-//
-//         pub fn init(match: []const u8) Self {
-//             return .{
-//                 .match = match,
-//             };
-//         }
-//
-//         fn parse(parser: *Parser(Input, []const u8), allocator: Allocator, src: *Input) Allocator.Error!?[]const u8 {
-//             const self = @fieldParentPtr(Self, "parser", parser);
-//
-//             const buffer = try allocator.alloc(u8, self.match.len);
-//             errdefer allocator.free(buffer);
-//
-//             const read = try src.reader().readAll(buffer);
-//
-//             if (read < self.match.len or !std.mem.eql(u8, buffer, self.match)) {
-//                 try src.seekableStream().seekBy(-@intCast(i64, read));
-//                 allocator.free(buffer);
-//                 return null;
-//             }
-//
-//             return buffer;
-//         }
-//     };
-// }
-//
-// pub fn OneOf(comptime Input: type, comptime Output: type) type {
-//     return struct {
-//         parser: Parser(Input, Output) = .{
-//             ._parse = parse,
-//         },
-//         parsers: []*Parser(Input, Output),
-//
-//         const Self = @This();
-//
-//         pub fn init(parsers: []*Parser(Input, Output)) Self {
-//             return Self{
-//                 .parsers = parsers,
-//             };
-//         }
-//
-//         fn parse(parser: *Parser(Input, Output), allocator: Allocator, src: *Input) Allocator.Error!?Output {
-//             const self = @fieldParentPtr(Self, "parser", parser);
-//
-//             for (self.parsers) |pars| {
-//                 const output = try pars.parse(allocator, src);
-//                 if (output) |out| {
-//                     return out;
-//                 }
-//             }
-//
-//             return null;
-//         }
-//     };
-// }
