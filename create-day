@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+input=$1
+
+AOC_COOKIE=`cat .cookie`
+
+if [ -z "$input" ]; then
+	echo "Please provide an argument"
+	exit 1
+fi
+
+FILE="src/day${input}.zig"
+if [[ -f "$FILE" ]]; then
+    echo "Day $input already exists!"
+	exit 1
+fi
+
+quoteRe() { sed -e 's/[^^]/[&]/g; s/\^/\\^/g; $!a\'$'\n''\\n' <<<"$1" | tr -d '\n'; }
+
+quoteSubst() {
+  IFS= read -d '' -r < <(sed -e ':a' -e '$!{N;ba' -e '}' -e 's/[&/\]/\\&/g; s/\n/\\&/g' <<<"$1")
+  printf %s "${REPLY%$'\n'}"
+}
+
+build_input=$(echo "
+    {
+        const exe = b.addExecutable(\"adventOfCode2022-zig-day${input}\", \"src/day${input}.zig\");
+        exe.setTarget(target);
+        exe.setBuildMode(mode);
+        exe.install();
+
+        const run_cmd = exe.run();
+        run_cmd.step.dependOn(b.getInstallStep());
+        if (b.args) |args| {
+            run_cmd.addArgs(args);
+        }
+
+        const run_step = b.step(\"day${input}\", \"Run day ${input}\");
+        run_step.dependOn(&run_cmd.step);
+    }")
+
+build_search="    const mode = b.standardReleaseOptions();"
+
+sed -i "/$(quoteRe "$build_search")/a $(quoteSubst "$build_input")" build.zig
+
+target_input="inputs/day${input}.txt"
+url="https://adventofcode.com/2022/day/${input}/input"
+curl -o $target_input -b "$AOC_COOKIE" $url
+
+echo "const std = @import(\"std\");
+const mainFunc = @import(\"base.zig\").mainFunc;
+
+fn part1(buffer: []const u8) !u64 {
+    return buffer.len;
+}
+
+fn part2(buffer: []const u8) !u64 {
+    return buffer.len;
+}
+
+pub fn main() !void {
+    try mainFunc(\"inputs/day${input}.txt\", part1, part2);
+}" >> $FILE
