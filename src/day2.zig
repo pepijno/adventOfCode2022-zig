@@ -40,6 +40,7 @@ fn part1(buffer: []const u8) !u64 {
     const allocator = std.heap.page_allocator;
 
     const lines = try parser.parse(allocator, buffer);
+    defer lines.value.deinit();
     var total: u64 = 0;
 
     for (lines.value.items) |line| {
@@ -85,6 +86,7 @@ fn part2(buffer: []const u8) !u64 {
     const allocator = std.heap.page_allocator;
 
     const lines = try parser.parse(allocator, buffer);
+    defer lines.value.deinit();
     var total: u64 = 0;
 
     for (lines.value.items) |line| {
