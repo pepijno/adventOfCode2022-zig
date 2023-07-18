@@ -1,5 +1,6 @@
 const std = @import("std");
 const mainFunc = @import("base.zig").mainFunc;
+const readFileForTest = @import("base.zig").readFileForTest;
 const p = @import("parser.zig");
 
 fn priorityValue(char: u8) u64 {
@@ -75,4 +76,11 @@ fn part2(buffer: []const u8) !u64 {
 
 pub fn main() !void {
     try mainFunc("inputs/day3.txt", part1, part2);
+}
+
+test {
+    const buf = try readFileForTest("inputs/day3.txt");
+
+    try std.testing.expectEqual(part1(buf), 8088);
+    try std.testing.expectEqual(part2(buf), 2522);
 }

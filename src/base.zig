@@ -19,3 +19,16 @@ pub fn mainFunc(comptime file_path: []const u8, comptime part1: *const fn ([]con
 
     try bw.flush(); // don't forget to flush!
 }
+
+pub fn readFileForTest(comptime file_path: []const u8) ![]u8 {
+    const file = try std.fs.cwd().openFile(file_path, .{});
+    defer file.close();
+
+    var buf_reader = std.io.bufferedReader(file.reader());
+    var in_stream = buf_reader.reader();
+
+    var buf: [1024 * 1024]u8 = undefined;
+    _ = try in_stream.readAll(&buf);
+
+    return &buf;
+}

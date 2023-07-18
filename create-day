@@ -43,12 +43,20 @@ build_search="    const mode = b.standardReleaseOptions();"
 
 sed -i "/$(quoteRe "$build_search")/a $(quoteSubst "$build_input")" build.zig
 
+test_input=$(echo "
+    _ = @import(\"day${input}.zig\");
+")
+test_search="test {"
+
+sed -i "/$(quoteRe "$test_search")/a $(quoteSubst "$test_input")" src/tests.zig
+
 target_input="inputs/day${input}.txt"
 url="https://adventofcode.com/2022/day/${input}/input"
 curl -o $target_input -b "$AOC_COOKIE" $url
 
 echo "const std = @import(\"std\");
 const mainFunc = @import(\"base.zig\").mainFunc;
+const readFileForTest = @import(\"base.zig\").readFileForTest;
 
 fn part1(buffer: []const u8) !u64 {
     return buffer.len;
@@ -60,4 +68,11 @@ fn part2(buffer: []const u8) !u64 {
 
 pub fn main() !void {
     try mainFunc(\"inputs/day${input}.txt\", part1, part2);
+}
+
+test {
+    const buf = try readFileForTest(\"inputs/day${input}.txt\");
+
+    try std.testing.expectEqual(part1(buf), 1);
+    try std.testing.expectEqual(part2(buf), 2);
 }" >> $FILE
