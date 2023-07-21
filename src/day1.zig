@@ -1,56 +1,38 @@
 const std = @import("std");
-const parser = @import("parser.zig");
 
-const newline_parser = parser.Char('\n');
-const pars = parser.SeparatedBy(parser.SeparatedBy(parser.Natural(u64, 10), newline_parser), newline_parser);
-
-fn part1(buffer: []const u8) !u64 {
+fn sumFoods(buffer: []const u8) !std.ArrayList(u64) {
     const allocator = std.heap.page_allocator;
 
-    const result = try pars.parse(allocator, buffer);
-    defer result.value.deinit();
+    var foods = std.ArrayList(u64).init(allocator);
 
-    var totals = std.ArrayList(u64).init(allocator);
-    defer totals.deinit();
-    for (result.value.items) |foods| {
-        var total: u64 = 0;
-        for (foods.items) |item| {
-            total += item;
+    var lines = std.mem.split(u8, buffer, "\n");
+    var total: u64 = 0;
+    while (lines.next()) |line| {
+        if (line.len == 0) {
+            try foods.append(total);
+            total = 0;
+        } else {
+            const food = try std.fmt.parseInt(u64, line, 10);
+            total += food;
         }
-        try totals.append(total);
     }
+    try foods.append(total);
 
-    std.sort.sort(u64, totals.items, {}, comptime std.sort.desc(u64));
-    return totals.items[0];
+    return foods;
 }
 
-fn part2(buffer: []const u8) !u64 {
-    const allocator = std.heap.page_allocator;
-
-    const result = try pars.parse(allocator, buffer);
-    defer result.value.deinit();
-
-    var totals = std.ArrayList(u64).init(allocator);
-    defer totals.deinit();
-    for (result.value.items) |foods| {
-        var total: u64 = 0;
-        for (foods.items) |item| {
-            total += item;
-        }
-        try totals.append(total);
-    }
-
-    std.sort.sort(u64, totals.items, {}, comptime std.sort.desc(u64));
-    return totals.items[0] + totals.items[1] + totals.items[2];
+fn part1(buffer: []const u8) u64 {
+    const foods = sumFoods(buffer) catch unreachable;
+    defer foods.deinit();
+    std.sort.sort(u64, foods.items, {}, comptime std.sort.desc(u64));
+    return foods.items[0];
 }
 
-pub fn main() !void {
-    const stdout_file = std.io.getStdOut().writer();
-
-    const buf = @embedFile("inputs/day1.txt");
-
-    try stdout_file.print("{}\n", .{try part1(buf)});
-    try stdout_file.print("{}\n", .{try part2(buf)});
+fn part2(buffer: []const u8) u64 {
+    const foods = sumFoods(buffer) catch unreachable;
+    defer foods.deinit();
+    std.sort.sort(u64, foods.items, {}, comptime std.sort.desc(u64));
+    return foods.items[0] + foods.items[1] + foods.items[2];
 }
 
 test {

@@ -1,5 +1,4 @@
 const std = @import("std");
-const p = @import("parser.zig");
 
 fn priorityValue(char: u8) u64 {
     return switch (char) {
@@ -26,17 +25,12 @@ fn findDuplicate(line: []const u8) u64 {
     return priorityValue(duplicate);
 }
 
-const parser = p.Many(p.Line());
-
-fn part1(buffer: []const u8) !u64 {
-    const allocator = std.heap.page_allocator;
-
-    const lines = try parser.parse(allocator, buffer);
+fn part1(buffer: []const u8) u64 {
+    var lines = std.mem.tokenize(u8, buffer, "\n");
     var total: u64 = 0;
-    for (lines.value.items) |line| {
+    while (lines.next()) |line| {
         total += findDuplicate(line);
     }
-
     return total;
 }
 
@@ -58,27 +52,13 @@ fn findGroupBadge(line1: []const u8, line2: []const u8, line3: []const u8) u64 {
     return priorityValue(badge);
 }
 
-fn part2(buffer: []const u8) !u64 {
-    const allocator = std.heap.page_allocator;
-
-    const lines = try parser.parse(allocator, buffer);
+fn part2(buffer: []const u8) u64 {
+    var lines = std.mem.tokenize(u8, buffer, "\n");
     var total: u64 = 0;
-    var i: usize = 0;
-
-    while (i < lines.value.items.len) : (i += 3) {
-        total += findGroupBadge(lines.value.items[i], lines.value.items[i + 1], lines.value.items[i + 2]);
+    while (lines.next()) |line| {
+        total += findGroupBadge(line, lines.next().?, lines.next().?);
     }
-
     return total;
-}
-
-pub fn main() !void {
-    const stdout_file = std.io.getStdOut().writer();
-
-    const buf = @embedFile("inputs/day3.txt");
-
-    try stdout_file.print("{}\n", .{try part1(buf)});
-    try stdout_file.print("{}\n", .{try part2(buf)});
 }
 
 test {

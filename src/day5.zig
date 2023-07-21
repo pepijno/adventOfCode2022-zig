@@ -73,15 +73,6 @@ fn part2(buffer: []const u8) [9]u8 {
     return moveCrates(false, buffer) catch unreachable;
 }
 
-pub fn main() !void {
-    const stdout_file = std.io.getStdOut().writer();
-
-    const buf = @embedFile("inputs/day5.txt");
-
-    try stdout_file.print("{s}\n", .{part1(buf)});
-    try stdout_file.print("{s}\n", .{part2(buf)});
-}
-
 test {
     const buf = @embedFile("inputs/day5.txt");
 

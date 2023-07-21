@@ -1,8 +1,6 @@
 const std = @import("std");
 const p = @import("parser.zig");
 
-const parser = p.Many(p.Line());
-
 fn score1(line: []const u8) u64 {
     const enemy = line[0];
     const mine = line[2];
@@ -35,14 +33,11 @@ fn score1(line: []const u8) u64 {
     };
 }
 
-fn part1(buffer: []const u8) !u64 {
-    const allocator = std.heap.page_allocator;
-
-    const lines = try parser.parse(allocator, buffer);
-    defer lines.value.deinit();
+fn part1(buffer: []const u8) u64 {
+    var lines = std.mem.tokenize(u8, buffer, "\n");
     var total: u64 = 0;
 
-    for (lines.value.items) |line| {
+    while (lines.next()) |line| {
         total += score1(line);
     }
 
@@ -81,27 +76,15 @@ fn score2(line: []const u8) u64 {
     };
 }
 
-fn part2(buffer: []const u8) !u64 {
-    const allocator = std.heap.page_allocator;
-
-    const lines = try parser.parse(allocator, buffer);
-    defer lines.value.deinit();
+fn part2(buffer: []const u8) u64 {
+    var lines = std.mem.tokenize(u8, buffer, "\n");
     var total: u64 = 0;
 
-    for (lines.value.items) |line| {
+    while (lines.next()) |line| {
         total += score2(line);
     }
 
     return total;
-}
-
-pub fn main() !void {
-    const stdout_file = std.io.getStdOut().writer();
-
-    const buf = @embedFile("inputs/day2.txt");
-
-    try stdout_file.print("{}\n", .{try part1(buf)});
-    try stdout_file.print("{}\n", .{try part2(buf)});
 }
 
 test {

@@ -22,60 +22,16 @@ quoteSubst() {
   printf %s "${REPLY%$'\n'}"
 }
 
-build_input=$(echo "
-    {
-        const exe = b.addExecutable(\"adventOfCode2022-zig-day${input}\", \"src/day${input}.zig\");
-        exe.setTarget(target);
-        exe.setBuildMode(mode);
-        exe.install();
-
-        const run_cmd = exe.run();
-        run_cmd.step.dependOn(b.getInstallStep());
-        if (b.args) |args| {
-            run_cmd.addArgs(args);
-        }
-
-        const run_step = b.step(\"day${input}\", \"Run day ${input}\");
-        run_step.dependOn(&run_cmd.step);
-    }")
-
-build_search="    const mode = b.standardReleaseOptions();"
-
-sed -i "/$(quoteRe "$build_search")/a $(quoteSubst "$build_input")" build.zig
-
 test_input=$(echo "
     _ = @import(\"day${input}.zig\");
 ")
 test_search="test {"
 
-sed -i "/$(quoteRe "$test_search")/a $(quoteSubst "$test_input")" src/tests.zig
+sed -i "/$(quoteRe "$test_search")/a $(quoteSubst "$test_input")" src/main.zig
 
 target_input="src/inputs/day${input}.txt"
 url="https://adventofcode.com/2022/day/${input}/input"
 curl -o $target_input -b "$AOC_COOKIE" $url
 
-echo "const std = @import(\"std\");
-
-fn part1(buffer: []const u8) u64 {
-    return buffer.len;
-}
-
-fn part2(buffer: []const u8) u64 {
-    return buffer.len;
-}
-
-pub fn main() !void {
-    const stdout_file = std.io.getStdOut().writer();
-
-    const buf = @embedFile(\"inputs/day${input}.txt\");
-
-    try stdout_file.print(\"{}\\n\", .{part1(buf)});
-    try stdout_file.print(\"{}\\n\", .{part2(buf)});
-}
-
-test {
-    const buf = @embedFile(\"inputs/day${input}.txt\");
-
-    try std.testing.expectEqual(part1(buf), 1);
-    try std.testing.expectEqual(part2(buf), 2);
-}" >> $FILE
+cp template.zig src/day$input.zig
+sed -i "s/dayinput/day${input}/" src/day$input.zig
