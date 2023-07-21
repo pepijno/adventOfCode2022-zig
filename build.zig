@@ -5,6 +5,21 @@ pub fn build(b: *std.build.Builder) void {
 
     const mode = b.standardReleaseOptions();
     {
+        const exe = b.addExecutable("adventOfCode2022-zig-day5", "src/day5.zig");
+        exe.setTarget(target);
+        exe.setBuildMode(mode);
+        exe.install();
+
+        const run_cmd = exe.run();
+        run_cmd.step.dependOn(b.getInstallStep());
+        if (b.args) |args| {
+            run_cmd.addArgs(args);
+        }
+
+        const run_step = b.step("day5", "Run day 5");
+        run_step.dependOn(&run_cmd.step);
+    }
+    {
         const exe = b.addExecutable("adventOfCode2022-zig-day4", "src/day4.zig");
         exe.setTarget(target);
         exe.setBuildMode(mode);

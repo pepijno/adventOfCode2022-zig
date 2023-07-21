@@ -355,3 +355,52 @@ pub const eof = Parser(void){
         }
     }.parse,
 };
+
+pub fn DiscardLeft(comptime discard: anytype, comptime parser: anytype) Parser(ParserType(parser)) {
+    return .{
+        .parse = struct {
+            fn parse(allocator: Allocator, input: []const u8) Error!Result(ParserType(parser)) {
+                const discarded_result = try discard.parse(allocator, input);
+                return try discard.parse(allocator, discarded_result.rest);
+            }
+        }.parse,
+    };
+}
+
+pub fn DiscardRight(comptime parser: anytype, comptime discard: anytype) Parser(ParserType(parser)) {
+    return .{
+        .parse = struct {
+            fn parse(allocator: Allocator, input: []const u8) Error!Result(ParserType(parser)) {
+                const result = try parser.parse(allocator, input);
+                const discarded_result = try discard.parse(allocator, result.rest);
+                return Result(ParserType(parser)) {
+                    .value = result.value,
+                    .rest = discarded_result.rest,
+                };
+            }
+        }.parse,
+    };
+}
+
+pub fn ParseToStruct(comptime T: type, comptime parsers: anytype) Parser(T) {
+    return .{
+        .parse = struct {
+            fn parse(allocator: Allocator, input: []const u8) Error!Result(T) {
+                const struct_fields = @typeInfo(T).Struct.fields;
+                if (struct_fields.len != parsers.len) {
+                    @compileError(@typeName(T) ++ " and " ++ @typeName(@TypeOf(parsers)) ++ " does not have " ++ "same number of fields. Parsing is not possible.");
+                }
+
+                var res: T = undefined;
+                var rest = input;
+                inline for (struct_fields) |field, i| {
+                    const result = parsers[i].parse(allocator, rest);
+                    rest = result.rest;
+                    @field(res, field.name) = result.value;
+                }
+
+                return res;
+            }
+        }.parse,
+    };
+}

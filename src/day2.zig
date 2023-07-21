@@ -1,6 +1,4 @@
 const std = @import("std");
-const mainFunc = @import("base.zig").mainFunc;
-const readFileForTest = @import("base.zig").readFileForTest;
 const p = @import("parser.zig");
 
 const parser = p.Many(p.Line());
@@ -98,11 +96,16 @@ fn part2(buffer: []const u8) !u64 {
 }
 
 pub fn main() !void {
-    try mainFunc("inputs/day2.txt", part1, part2);
+    const stdout_file = std.io.getStdOut().writer();
+
+    const buf = @embedFile("inputs/day2.txt");
+
+    try stdout_file.print("{}\n", .{try part1(buf)});
+    try stdout_file.print("{}\n", .{try part2(buf)});
 }
 
 test {
-    const buf = try readFileForTest("inputs/day2.txt");
+    const buf = @embedFile("inputs/day2.txt");
 
     try std.testing.expectEqual(part1(buf), 13009);
     try std.testing.expectEqual(part2(buf), 10398);
