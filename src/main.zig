@@ -1,4 +1,5 @@
 test {
+    _ = @import("day11.zig");
     _ = @import("day10.zig");
     _ = @import("day9.zig");
     _ = @import("day8.zig");
