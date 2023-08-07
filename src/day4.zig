@@ -36,9 +36,16 @@ fn part2(buffer: []const u8) !u64 {
     return total;
 }
 
-test {
+test "Day 4 part 1" {
     const buf = @embedFile("inputs/day4.txt");
-
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 503);
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+}
+
+test "Day 4 part 2" {
+    const buf = @embedFile("inputs/day4.txt");
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 827);
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
 }

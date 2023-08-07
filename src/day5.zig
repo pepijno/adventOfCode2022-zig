@@ -73,9 +73,16 @@ fn part2(buffer: []const u8) [9]u8 {
     return moveCrates(false, buffer) catch unreachable;
 }
 
-test {
+test "Day 5 part 1" {
     const buf = @embedFile("inputs/day5.txt");
-
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqualStrings(&part1(buf), "WSFTMRHPP");
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+}
+
+test "Day 5 part 2" {
+    const buf = @embedFile("inputs/day5.txt");
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqualStrings(&part2(buf), "GSLCMFBRP");
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
 }

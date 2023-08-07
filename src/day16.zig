@@ -177,16 +177,16 @@ fn part2(buffer: []const u8) !u64 {
     return max;
 }
 
-test {
+test "Day 16 part 1" {
     const buf = @embedFile("inputs/day16.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 1789);
-    std.debug.print("Day 16 part 1 took {d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
 }
 
-test {
+test "Day 16 part 2" {
     const buf = @embedFile("inputs/day16.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 2496);
-    std.debug.print("Day 16 part 2 took {d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
 }

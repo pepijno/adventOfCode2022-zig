@@ -69,7 +69,6 @@ fn bfs(allocator: std.mem.Allocator, grid: [width][height]u8, start: Point) ![wi
     }
 
     while (queue.popOrNull()) |point| {
-
         if (visited[point.x][point.y]) {
             continue;
         }
@@ -144,9 +143,16 @@ fn part2(buffer: []const u8) !u64 {
     return min;
 }
 
-test {
+test "Day 12 part 1" {
     const buf = @embedFile("inputs/day12.txt");
-
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 350);
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+}
+
+test "Day 12 part 2" {
+    const buf = @embedFile("inputs/day12.txt");
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 349);
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
 }

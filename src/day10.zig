@@ -33,12 +33,7 @@ fn part1(buffer: []const u8) !i64 {
         }
     }
 
-    return values.items[19].multiply()
-        + values.items[59].multiply()
-        + values.items[99].multiply()
-        + values.items[139].multiply()
-        + values.items[179].multiply()
-        + values.items[219].multiply();
+    return values.items[19].multiply() + values.items[59].multiply() + values.items[99].multiply() + values.items[139].multiply() + values.items[179].multiply() + values.items[219].multiply();
 }
 
 fn pixel(cycle: u64, register: i64) u8 {
@@ -86,9 +81,16 @@ fn part2(buffer: []const u8) ![]const u8 {
     return "BJFRHRFU";
 }
 
-test {
+test "Day 10 part 1" {
     const buf = @embedFile("inputs/day10.txt");
-
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 14620);
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+}
+
+test "Day 10 part 2" {
+    const buf = @embedFile("inputs/day10.txt");
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqualStrings(try part2(buf), "BJFRHRFU");
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
 }

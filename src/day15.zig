@@ -149,9 +149,16 @@ fn part2(buffer: []const u8) !u64 {
     unreachable;
 }
 
-test {
+test "Day 15 part 1" {
     const buf = @embedFile("inputs/day15.txt");
-
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 5073496);
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+}
+
+test "Day 15 part 2" {
+    const buf = @embedFile("inputs/day15.txt");
+    var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 13081194638237);
+    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
 }
