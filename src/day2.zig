@@ -1,5 +1,4 @@
 const std = @import("std");
-const p = @import("parser.zig");
 
 fn score1(line: []const u8) u64 {
     const enemy = line[0];
@@ -91,12 +90,12 @@ test "Day 2 part 1" {
     const buf = @embedFile("inputs/day2.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 13009);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 2 part 2" {
     const buf = @embedFile("inputs/day2.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 10398);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

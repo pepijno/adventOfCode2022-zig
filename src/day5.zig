@@ -42,15 +42,13 @@ fn moveCrates(comptime separate: bool, buffer: []const u8) ![9]u8 {
 
     for (moves.items) |move| {
         if (separate) {
-            var i: usize = 0;
-            while (i < move.amount) : (i += 1) {
+            for (0..move.amount) |_| {
                 const crate = crate_stacks[move.from].pop();
                 try crate_stacks[move.to].append(crate);
             }
         } else {
             const index = crate_stacks[move.to].items.len;
-            var i: usize = 0;
-            while (i < move.amount) : (i += 1) {
+            for (0..move.amount) |_| {
                 const crate = crate_stacks[move.from].pop();
                 try crate_stacks[move.to].insert(index, crate);
             }
@@ -58,7 +56,7 @@ fn moveCrates(comptime separate: bool, buffer: []const u8) ![9]u8 {
     }
 
     var result = [_]u8{0} ** 9;
-    for (crate_stacks) |stack, i| {
+    for (crate_stacks, 0..) |stack, i| {
         result[i] = stack.items[stack.items.len - 1];
     }
 
@@ -77,12 +75,12 @@ test "Day 5 part 1" {
     const buf = @embedFile("inputs/day5.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqualStrings(&part1(buf), "WSFTMRHPP");
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 5 part 2" {
     const buf = @embedFile("inputs/day5.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqualStrings(&part2(buf), "GSLCMFBRP");
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

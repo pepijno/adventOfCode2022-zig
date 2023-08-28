@@ -5,12 +5,12 @@ const Range = struct {
     end: i64 = 0,
 
     fn merge(a: Range, b: Range) ?Range {
-        const start_max = std.math.max(a.start, b.start);
-        const end_min = std.math.min(a.end, b.end);
+        const start_max = @max(a.start, b.start);
+        const end_min = @min(a.end, b.end);
         if (start_max <= end_min + 1) {
             return Range{
-                .start = std.math.min(a.start, b.start),
-                .end = std.math.max(a.end, b.end),
+                .start = @min(a.start, b.start),
+                .end = @max(a.end, b.end),
             };
         }
         return null;
@@ -92,7 +92,7 @@ fn createRanges(allocator: std.mem.Allocator, sensors: std.ArrayList(Sensor), y:
 }
 
 fn addToRanges(ranges: *std.ArrayList(Range), range: Range) !void {
-    for (ranges.items) |r, i| {
+    for (ranges.items, 0..) |r, i| {
         const merged = r.merge(range);
         if (merged) |m| {
             _ = ranges.swapRemove(i);
@@ -106,7 +106,7 @@ fn addToRanges(ranges: *std.ArrayList(Range), range: Range) !void {
 fn rangesSizes(ranges: std.ArrayList(Range)) u64 {
     var sum: u64 = 0;
     for (ranges.items) |range| {
-        sum += @intCast(u64, range.end - range.start);
+        sum += @intCast(range.end - range.start);
     }
     return sum;
 }
@@ -139,9 +139,9 @@ fn part2(buffer: []const u8) !u64 {
 
         if (ranges.items.len > 1) {
             if (ranges.items[0].start > 0) {
-                return @intCast(u64, 4000000 * (ranges.items[0].start - 1) + y);
+                return @intCast(4000000 * (ranges.items[0].start - 1) + y);
             } else {
-                return @intCast(u64, 4000000 * (ranges.items[0].end + 1) + y);
+                return @intCast(4000000 * (ranges.items[0].end + 1) + y);
             }
         }
     }
@@ -153,12 +153,12 @@ test "Day 15 part 1" {
     const buf = @embedFile("inputs/day15.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 5073496);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 15 part 2" {
     const buf = @embedFile("inputs/day15.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 13081194638237);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

@@ -13,7 +13,7 @@ fn parseTrees(buffer: []const u8) [SIZE][SIZE]u8 {
     var lines = std.mem.tokenize(u8, buffer, "\n");
     var y: u8 = 0;
     while (lines.next()) |line| {
-        for (line) |tree, i| {
+        for (line, 0..) |tree, i| {
             grid[y][i] = tree - '0';
         }
         y += 1;
@@ -29,55 +29,48 @@ fn part1(buffer: []const u8) !u64 {
     var trees = std.AutoHashMap(Point, void).init(allocator);
     defer trees.deinit();
 
-    var x: u8 = 0;
-    var y: u8 = 0;
-    while (y < SIZE) : (y += 1) {
-        try trees.put(.{ .x = 0, .y = y }, {});
+    for (0..SIZE) |y| {
+        try trees.put(.{ .x = 0, .y = @intCast(y) }, {});
         var highest_tree: u8 = grid[y][0];
-        x = 1;
-        while (x < SIZE) : (x += 1) {
+        for (1..SIZE) |x| {
             if (grid[y][x] > highest_tree) {
                 highest_tree = grid[y][x];
-                try trees.put(.{ .x = x, .y = y }, {});
+                try trees.put(.{ .x = @intCast(x), .y = @intCast(y) }, {});
             }
         }
     }
 
-    y = 0;
-    while (y < SIZE) : (y += 1) {
-        try trees.put(.{ .x = SIZE - 1, .y = y }, {});
+    for (0..SIZE) |y| {
+        try trees.put(.{ .x = SIZE - 1, .y = @intCast(y) }, {});
         var highest_tree: u8 = grid[y][SIZE - 1];
         var xx: i8 = SIZE - 2;
         while (xx >= 0) : (xx -= 1) {
-            if (grid[y][@intCast(u8, xx)] > highest_tree) {
-                highest_tree = grid[y][@intCast(u8, xx)];
-                try trees.put(.{ .x = @intCast(u8, xx), .y = y }, {});
+            if (grid[y][@as(u8, @intCast(xx))] > highest_tree) {
+                highest_tree = grid[y][@intCast(xx)];
+                try trees.put(.{ .x = @intCast(xx), .y = @intCast(y) }, {});
             }
         }
     }
 
-    x = 0;
-    while (x < SIZE) : (x += 1) {
-        try trees.put(.{ .x = x, .y = 0 }, {});
+    for (0..SIZE) |x| {
+        try trees.put(.{ .x = @intCast(x), .y = 0 }, {});
         var highest_tree: u8 = grid[0][x];
-        y = 1;
-        while (y < SIZE) : (y += 1) {
+        for (1..SIZE) |y| {
             if (grid[y][x] > highest_tree) {
                 highest_tree = grid[y][x];
-                try trees.put(.{ .x = x, .y = y }, {});
+                try trees.put(.{ .x = @intCast(x), .y = @intCast(y) }, {});
             }
         }
     }
 
-    x = 0;
-    while (x < SIZE) : (x += 1) {
-        try trees.put(.{ .x = x, .y = SIZE - 1 }, {});
+    for (0..SIZE) |x| {
+        try trees.put(.{ .x = @intCast(x), .y = SIZE - 1 }, {});
         var highest_tree: u8 = grid[SIZE - 1][x];
         var yy: i8 = SIZE - 2;
         while (yy >= 0) : (yy -= 1) {
-            if (grid[@intCast(u8, yy)][x] > highest_tree) {
-                highest_tree = grid[@intCast(u8, yy)][x];
-                try trees.put(.{ .x = x, .y = @intCast(u8, yy) }, {});
+            if (grid[@as(u8, @intCast(yy))][x] > highest_tree) {
+                highest_tree = grid[@intCast(yy)][x];
+                try trees.put(.{ .x = @intCast(x), .y = @intCast(yy) }, {});
             }
         }
     }
@@ -149,12 +142,12 @@ test "Day 8 part 1" {
     const buf = @embedFile("inputs/day8.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 1805);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 8 part 2" {
     const buf = @embedFile("inputs/day8.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 444528);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

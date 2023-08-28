@@ -62,8 +62,7 @@ fn doMonkeyRounds(monkeys: *std.ArrayList(Monkey), n: usize, do_div: bool) !void
         modulus *= monkey.test_value;
     }
 
-    var i: usize = 0;
-    while (i < n) : (i += 1) {
+    for (0..n) |_| {
         for (monkeys.items) |*monkey| {
             while (monkey.items.popOrNull()) |item| {
                 monkey.inspections += 1;
@@ -95,7 +94,7 @@ fn part1(buffer: []const u8) !u64 {
     for (monkeys.items) |monkey| {
         try inspections.append(monkey.inspections);
     }
-    std.sort.sort(u64, inspections.items, {}, comptime std.sort.desc(u64));
+    std.sort.insertion(u64, inspections.items, {}, comptime std.sort.desc(u64));
 
     return inspections.items[0] * inspections.items[1];
 }
@@ -112,7 +111,7 @@ fn part2(buffer: []const u8) !u64 {
     for (monkeys.items) |monkey| {
         try inspections.append(monkey.inspections);
     }
-    std.sort.sort(u64, inspections.items, {}, comptime std.sort.desc(u64));
+    std.sort.insertion(u64, inspections.items, {}, comptime std.sort.desc(u64));
 
     return inspections.items[0] * inspections.items[1];
 }
@@ -121,12 +120,12 @@ test "Day 11 part 1" {
     const buf = @embedFile("inputs/day11.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 108240);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 11 part 2" {
     const buf = @embedFile("inputs/day11.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 25712998901);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

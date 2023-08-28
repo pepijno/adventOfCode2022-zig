@@ -24,14 +24,14 @@ fn sumFoods(buffer: []const u8) !std.ArrayList(u64) {
 fn part1(buffer: []const u8) u64 {
     const foods = sumFoods(buffer) catch unreachable;
     defer foods.deinit();
-    std.sort.sort(u64, foods.items, {}, comptime std.sort.desc(u64));
+    std.sort.insertion(u64, foods.items, {}, comptime std.sort.desc(u64));
     return foods.items[0];
 }
 
 fn part2(buffer: []const u8) u64 {
     const foods = sumFoods(buffer) catch unreachable;
     defer foods.deinit();
-    std.sort.sort(u64, foods.items, {}, comptime std.sort.desc(u64));
+    std.sort.insertion(u64, foods.items, {}, comptime std.sort.desc(u64));
     return foods.items[0] + foods.items[1] + foods.items[2];
 }
 
@@ -39,12 +39,12 @@ test "Day 1 part 1" {
     const buf = @embedFile("inputs/day1.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 69883);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 1 part 2" {
     const buf = @embedFile("inputs/day1.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 207576);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

@@ -127,7 +127,7 @@ fn part1(buffer: []const u8) !u64 {
     var max: u64 = 0;
     var iterator = res.iterator();
     while (iterator.next()) |i| {
-        max = std.math.max(i.value_ptr.*, max);
+        max = @max(i.value_ptr.*, max);
     }
 
     return max;
@@ -161,16 +161,15 @@ fn part2(buffer: []const u8) !u64 {
     }
 
     var max: u64 = 0;
-    for (pairs.items) |item, i| {
+    for (pairs.items, 0..) |item, i| {
         const opens = item.opens;
         const flow = item.flow;
-        var j = i + 1;
-        while (j < pairs.items.len) : (j += 1) {
+        for ((i + 1)..pairs.items.len) |j| {
             if ((pairs.items[j].opens.mask & opens.mask) != 0) {
                 continue;
             }
             const re = pairs.items[j].flow + flow;
-            max = std.math.max(max, re);
+            max = @max(max, re);
         }
     }
 
@@ -181,12 +180,12 @@ test "Day 16 part 1" {
     const buf = @embedFile("inputs/day16.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 1789);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 16 part 2" {
     const buf = @embedFile("inputs/day16.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 2496);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

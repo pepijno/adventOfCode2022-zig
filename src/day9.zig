@@ -48,8 +48,7 @@ fn Rope(comptime size: usize) type {
         }
 
         fn updateTail(self: *Self) void {
-            var i: usize = 1;
-            while (i < size) : (i += 1) {
+            for (1..size) |i| {
                 var current = &self.pieces[i];
                 var previous = &self.pieces[i - 1];
                 if (abs(current.x - previous.x) <= 1 and abs(current.y - previous.y) <= 1) {
@@ -77,8 +76,7 @@ fn countTailPositions(allocator: std.mem.Allocator, buffer: []const u8, rope: an
         const dir = chs.next().?[0];
         const int = chs.next().?[0..];
         const amount = try std.fmt.parseInt(u32, int, 10);
-        var i: u32 = 0;
-        while (i < amount) : (i += 1) {
+        for (0..amount) |_| {
             switch (dir) {
                 'D' => rope.moveHead(.Down),
                 'U' => rope.moveHead(.Up),
@@ -109,12 +107,12 @@ test "Day 9 part 1" {
     const buf = @embedFile("inputs/day9.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 6037);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 9 part 2" {
     const buf = @embedFile("inputs/day9.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 2485);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

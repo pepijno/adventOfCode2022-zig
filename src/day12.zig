@@ -119,10 +119,8 @@ fn part2(buffer: []const u8) !u64 {
     var end: Point = .{ .x = 0, .y = 0 };
 
     var grid = createGrid(buffer, &start, &end);
-    var y: usize = 0;
-    while (y < height) : (y += 1) {
-        var x: usize = 0;
-        while (x < width) : (x += 1) {
+    for (0..height) |y| {
+        for (0..width) |x| {
             grid[x][y] = 25 - grid[x][y];
         }
     }
@@ -130,10 +128,8 @@ fn part2(buffer: []const u8) !u64 {
     const lengths = try bfs(allocator, grid, end);
 
     var min: u16 = width * height;
-    y = 0;
-    while (y < height) : (y += 1) {
-        var x: usize = 0;
-        while (x < width) : (x += 1) {
+    for (0..height) |y| {
+        for (0..width) |x| {
             if (grid[x][y] == 25 and lengths[x][y] < min) {
                 min = lengths[x][y];
             }
@@ -147,12 +143,12 @@ test "Day 12 part 1" {
     const buf = @embedFile("inputs/day12.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 350);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 12 part 2" {
     const buf = @embedFile("inputs/day12.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 349);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

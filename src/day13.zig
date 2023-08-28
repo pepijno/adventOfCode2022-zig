@@ -33,9 +33,8 @@ const DataItem = struct {
                 return .Indeterminate;
             }
         } else if (left.value == null and right.value == null) {
-            var i: usize = 0;
             const max = @max(left.list.items.len, right.list.items.len);
-            while (i < max) : (i += 1) {
+            for (0..max) |i| {
                 if (i == left.list.items.len) {
                     return .CorrectOrder;
                 }
@@ -144,8 +143,7 @@ fn part1(buffer: []const u8) !u64 {
 }
 
 fn sortPackets(allocator: std.mem.Allocator, packets: *std.ArrayList(DataItem)) !void {
-    var i: usize = 1;
-    while (i < packets.items.len) : (i += 1) {
+    for (1..packets.items.len) |i| {
         var j: usize = i;
         while (j > 0) : (j -= 1) {
             var left = packets.items[j - 1];
@@ -203,12 +201,12 @@ test "Day 13 part 1" {
     const buf = @embedFile("inputs/day13.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 5905);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 13 part 2" {
     const buf = @embedFile("inputs/day13.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part2(buf), 21691);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }

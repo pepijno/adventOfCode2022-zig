@@ -8,7 +8,7 @@ fn part1(buffer: []const u8) !i64 {
         register: i64,
 
         fn multiply(self: @This()) i64 {
-            return @intCast(i64, self.cycle) * self.register;
+            return @as(i64, @intCast(self.cycle)) * self.register;
         }
     };
 
@@ -69,8 +69,7 @@ fn part2(buffer: []const u8) ![]const u8 {
     }
 
     std.debug.print("\n", .{});
-    var i: usize = 0;
-    while (i < 240) : (i += 1) {
+    for (0..240) |i| {
         if ((i % 40) == 0) {
             std.debug.print("\n", .{});
         }
@@ -85,12 +84,12 @@ test "Day 10 part 1" {
     const buf = @embedFile("inputs/day10.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqual(part1(buf), 14620);
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
 
 test "Day 10 part 2" {
     const buf = @embedFile("inputs/day10.txt");
     var timer = try std.time.Timer.start();
     try std.testing.expectEqualStrings(try part2(buf), "BJFRHRFU");
-    std.debug.print("{d:9.3}ms\n", .{@intToFloat(f64, timer.lap()) / 1000000.0});
+    std.debug.print("{d:9.3}ms\n", .{@as(f64, @floatFromInt(timer.lap())) / 1000000.0});
 }
